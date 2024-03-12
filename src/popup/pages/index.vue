@@ -1,63 +1,24 @@
-<script setup lang="ts">
-import { useAppStore } from '@/stores/app.store'
 
-const version = __VERSION__
-const displayName = __DISPLAY_NAME__
-const gitURL = __GITHUB_URL__
-const gitCommit = __GIT_COMMIT__
-const gitCommitURL = `${gitURL}/commit/${gitCommit}`
-
-const store = useAppStore()
-
-const name = computed(() => store.name)
-const count = computed(() => store.count)
-</script>
 
 <template>
   <div class="text-center m-4 flex flex-col gap-y-2">
-    <h1 class="text-3xl font-bold underline pb-6">Hello world from Popup!</h1>
-
-    <p>Vesion: {{ version }}</p>
-    <p>Display name: {{ displayName }}</p>
-
-    <p>
-      GIT URL:
-      <a
-        class="undeline text-green-500"
-        :href="gitURL"
-      >
-        {{ gitURL }}
-      </a>
-    </p>
-
-    <p>
-      GIT Commit:
-      <a
-        :href="gitCommitURL"
-        class="text-green-500"
-      >
-        (#{{ gitCommit }})
-      </a>
-    </p>
-
-    <p>Name: {{ name }}</p>
-    <p>Count: {{ count }}</p>
-
-    <div class="flex gap-x-2 justify-center">
-      <button
-        class="btn btn-primary"
-        @click="store.increment"
-      >
-        Increment
-      </button>
-      <button
-        class="btn btn-primary"
-        @click="store.decrement"
-      >
-        Decrement
-      </button>
+    <div>
+      <label for="urlToBan>">URL to ban:</label>
+      <input
+        id="urlToBan"
+        type="text"
+        v-model="urlToBan"
+        class="border border-gray-300 rounded-md p-2">
     </div>
+    <button @click="banUrl" class="bg-blue-200 rounded-full p-2">Ban Url</button>
 
+    <div>
+      <h2>Banned URLs</h2>
+      <ul>
+        <li v-for="url in bannedUrlList" :key="url">{{ url }}</li>
+      </ul>
+    </div>
+    
     <RouterLink
       class="underline"
       to="/common/about"
@@ -66,6 +27,61 @@ const count = computed(() => store.count)
     </RouterLink>
   </div>
 </template>
+
+<script setup lang="ts">
+import { RouterLink } from 'vue-router';
+import { ref } from 'vue';
+import { b } from 'unplugin-vue-router/dist/options-8dbadba3';
+
+interface Message {
+  to: string;
+  action: string;
+  payload: any;
+}
+
+function sendMessage(message: Message) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      chrome.runtime.sendMessage( message, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+        resolve(response);
+      }
+    });
+   } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+const urlToBan = ref('');
+const bannedUrlList = ref([]);
+
+async function banUrl() {
+  const response = await sendMessage({
+    to: 'background',
+    action: 'banUrl',
+    payload: urlToBan.value,
+  });
+  console.log('banUrl', urlToBan.value);
+  urlToBan.value = '';
+  const bannedListResponse = await getBannedUrlList();
+  bannedUrlList.value = bannedListResponse.bannedUrls;
+  console.log(bannedUrlList.value);
+}
+
+async function getBannedUrlList() {
+  const result = await sendMessage({
+    to: 'background',
+    action: 'getBannedUrlList',
+    payload: null,
+  });
+  return result;
+ 
+}
+
+</script>
 
 <style scoped>
 .btn {
