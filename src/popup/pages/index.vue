@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { b } from 'unplugin-vue-router/dist/options-8dbadba3';
 
 interface Message {
@@ -57,6 +57,12 @@ function sendMessage(message: Message) {
 
 const urlToBan = ref('');
 const bannedUrlList = ref([]);
+
+onMounted(() => {
+  getBannedUrlList().then((response) => {
+    bannedUrlList.value = response.bannedUrls;
+  });
+});
 
 async function banUrl() {
   const response = await sendMessage({

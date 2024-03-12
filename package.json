@@ -5,7 +5,7 @@
     "vue": "^3.4.10",
     "vue-router": "^4.2.5"
   },
-  "description": "A Vue 3 + Vite project for building Chrome extensions",
+  "description": "A Chrome extension to ban and redirect websites",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.22",
     "@iconify-json/mdi": "^1.1.64",
@@ -40,11 +40,11 @@
     "vue-tsc": "^1.8.27",
     "webext-bridge": "^6.0.1"
   },
-  "displayName": "Vite Vue 3 Chrome Extension",
-  "name": "vite-vue3-chrome-extension-v3",
+  "displayName": "Ban and Redirect Extension",
+  "name": "ban-and-redirect-extension",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mubaidr/vite-vue3-chrome-extension-v3"
+    "url": "https://github.com/jlabrada71/redirect-vue-3.git"
   },
   "overrides": {
     "@crxjs/vite-plugin": "$@crxjs/vite-plugin"
